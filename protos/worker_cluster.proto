@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package worker_cluster;
+
+import "messages.proto";
+import "google/protobuf/empty.proto";
+
+
+message GetWorkersStatusResponse {
+  repeated messages.WorkerStatus statuses = 1;
+}
+
+message GetWorkerStatusRequest {
+  string worker_id = 1;
+}
+
+message TaskRequest {
+  uint64 task_id = 1;
+}
+
+
+service WorkerClusterTraining {
+  rpc GetWorkersStatus(google.protobuf.Empty) returns (GetWorkersStatusResponse);
+  rpc GetWorkerStatus(GetWorkerStatusRequest) returns (messages.WorkerStatus);
+  rpc AssignTrainingTask(TaskRequest) returns (messages.WorkerStatus);
+  rpc GetTrainingStatus(TaskRequest) returns (messages.TrainingStatus);
+  rpc PauseTrainingTask(TaskRequest) returns (google.protobuf.Empty);
+}
+
+message CheckInResponse {
+  string uuid = 1;
+}
+
+message ReportStatusRequest {
+  messages.WorkerStatus status = 2;
+}
+
+message ReportTrainingStatusRequest {
+  // UUID
+  string worker_id = 1;
+  optional messages.TrainingStatus status = 2;
+}
+
+service WorkerClusterWorker {
+  rpc CheckIn(messages.WorkerData) returns (CheckInResponse);
+  rpc ReportStatus(ReportStatusRequest) returns (google.protobuf.Empty);
+  rpc ReportTrainingStatus(ReportTrainingStatusRequest) returns (google.protobuf.Empty);
+}
+
+// TODO once a worker checks in it should use a token to authenticate itself to do further operations

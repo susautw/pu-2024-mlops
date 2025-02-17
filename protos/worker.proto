@@ -1,0 +1,18 @@
+syntax="proto3";
+
+package worker;
+
+import "google/protobuf/empty.proto";
+import "messages.proto";
+
+
+message StartWorkerRequest {
+  string task_path = 1;
+}
+
+
+service Worker {
+  rpc GetStatus(google.protobuf.Empty) returns (messages.WorkerStatus);
+  rpc StartWorker(StartWorkerRequest) returns (google.protobuf.Empty);
+  rpc StopWorker(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

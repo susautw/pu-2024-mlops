@@ -1,0 +1,33 @@
+syntax="proto3";
+
+package messages;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+
+message TrainingStatus {
+  string name = 1;
+  string phase = 2;
+  float progress = 3;
+  string description = 4;
+  bool is_completed = 5;
+}
+
+
+message WorkerStatus {
+  // UUID
+  string id = 1;
+  string task_type = 2;
+  bool healthy = 3;
+  bool has_task = 4;
+  optional google.protobuf.Timestamp joined_at = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message WorkerData {
+  string host = 1;
+  uint32 port = 2;
+  string task_type = 3;
+  google.protobuf.Struct options = 4;
+}
