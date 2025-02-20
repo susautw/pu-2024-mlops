@@ -1,12 +1,21 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
+from mlops.cluster.interfaces import WorkerClusterWorkerControllerBase
 from mlops.common.model import WorkerStatus
 
 
 @dataclass
 class WorkerStartOptions:
     task_path: str
+
+
+@dataclass
+class WorkerInitOptions:
+    host: str
+    port: int
+    options: dict[str, Any] = field(default_factory=dict)
 
 
 class WorkerBase(ABC):
@@ -40,11 +49,12 @@ class WorkerBase(ABC):
         """
 
     @abstractmethod
-    def init(self, worker_id: str) -> None:
+    def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
         """
         Initialize the worker
 
-        :param worker_id: a unique identifier for the worker
+        :param cluster: WorkerClusterWorkerControllerBase object
+        :param options: WorkerInitOptions object
         """
 
     @abstractmethod

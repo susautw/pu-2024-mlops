@@ -45,6 +45,8 @@ service WorkerClusterWorker {
   rpc CheckIn(messages.WorkerData) returns (CheckInResponse);
   rpc ReportStatus(ReportStatusRequest) returns (google.protobuf.Empty);
   rpc ReportTrainingStatus(ReportTrainingStatusRequest) returns (google.protobuf.Empty);
+
+  // TODO: Add a way to remove a worker from the cluster
 }
 
 // TODO once a worker checks in it should use a token to authenticate itself to do further operations
