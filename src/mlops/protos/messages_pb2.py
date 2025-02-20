@@ -26,7 +26,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0emessages.proto\x12\x08messages\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"j\n\x0eTrainingStatus\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05phase\x18\x02 \x01(\t\x12\x10\n\x08progress\x18\x03 \x01(\x02\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x14\n\x0cis_completed\x18\x05 \x01(\x08\"\xc2\x01\n\x0cWorkerStatus\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\ttask_type\x18\x02 \x01(\t\x12\x0f\n\x07healthy\x18\x03 \x01(\x08\x12\x10\n\x08has_task\x18\x04 \x01(\x08\x12\x32\n\tjoined_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x00\x88\x01\x01\x12.\n\ncreated_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x0c\n\n_joined_at\"e\n\nWorkerData\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\r\x12\x11\n\ttask_type\x18\x03 \x01(\t\x12(\n\x07options\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Structb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0emessages.proto\x12\x08messages\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"j\n\x0eTrainingStatus\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05phase\x18\x02 \x01(\t\x12\x10\n\x08progress\x18\x03 \x01(\x02\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x14\n\x0cis_completed\x18\x05 \x01(\x08\"\xd3\x01\n\x0cWorkerStatus\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\ttask_type\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x0f\n\x07healthy\x18\x04 \x01(\x08\x12\x10\n\x08has_task\x18\x05 \x01(\x08\x12\x32\n\tjoined_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x00\x88\x01\x01\x12.\n\ncreated_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x0c\n\n_joined_at\"v\n\nWorkerData\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\r\x12\x11\n\ttask_type\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12(\n\x07options\x18\x05 \x01(\x0b\x32\x17.google.protobuf.Structb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,7 +36,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_TRAININGSTATUS']._serialized_start=91
   _globals['_TRAININGSTATUS']._serialized_end=197
   _globals['_WORKERSTATUS']._serialized_start=200
-  _globals['_WORKERSTATUS']._serialized_end=394
-  _globals['_WORKERDATA']._serialized_start=396
-  _globals['_WORKERDATA']._serialized_end=497
+  _globals['_WORKERSTATUS']._serialized_end=411
+  _globals['_WORKERDATA']._serialized_start=413
+  _globals['_WORKERDATA']._serialized_end=531
 # @@protoc_insertion_point(module_scope)

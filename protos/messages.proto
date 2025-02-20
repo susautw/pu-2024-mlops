@@ -19,15 +19,17 @@ message WorkerStatus {
   // UUID
   string id = 1;
   string task_type = 2;
-  bool healthy = 3;
-  bool has_task = 4;
-  optional google.protobuf.Timestamp joined_at = 5;
-  google.protobuf.Timestamp created_at = 6;
+  string version = 3;
+  bool healthy = 4;
+  bool has_task = 5;
+  optional google.protobuf.Timestamp joined_at = 6;
+  google.protobuf.Timestamp created_at = 7;
 }
 
 message WorkerData {
   string host = 1;
   uint32 port = 2;
   string task_type = 3;
-  google.protobuf.Struct options = 4;
+  string version = 4;
+  google.protobuf.Struct options = 5;
 }

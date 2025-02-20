@@ -16,6 +16,7 @@ class TrainingStatus:
 class WorkerStatus:
     id: str
     task_type: str
+    version: str
     healthy: bool
     has_task: bool
     joined_at: datetime | None
@@ -27,4 +28,5 @@ class WorkerData:
     host: str
     port: int
     task_type: str
+    version: str
     options: dict[str, Any]
