@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from pathlib import Path
+from typing import Any, TypeVar
+
+from typing_extensions import Generic
 
 
 @dataclass
@@ -30,3 +33,17 @@ class WorkerData:
     task_type: str
     version: str
     options: dict[str, Any]
+
+
+IdType = TypeVar('IdType', int, None)
+
+
+@dataclass
+class TrainingTask(Generic[IdType]):
+    id: IdType
+    name: str
+    input_dir: Path
+    output_dir: Path
+    config: dict[str, Any]
+    created_at: datetime
+    updated_at: datetime | None

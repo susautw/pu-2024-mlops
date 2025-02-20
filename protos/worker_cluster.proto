@@ -20,6 +20,7 @@ message TaskRequest {
 
 
 service WorkerClusterTraining {
+  // TODO: Add ways to stream the status of all workers or a specific worker
   rpc GetWorkersStatus(google.protobuf.Empty) returns (GetWorkersStatusResponse);
   rpc GetWorkerStatus(GetWorkerStatusRequest) returns (messages.WorkerStatus);
   rpc AssignTrainingTask(TaskRequest) returns (messages.WorkerStatus);

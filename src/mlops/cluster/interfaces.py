@@ -86,7 +86,7 @@ class WorkerClusterWorkerControllerBase(ABC):
         """
 
 
-class WorkerClusterBase(ABC, WorkerClusterTrainingControllerBase, WorkerClusterWorkerControllerBase):
+class WorkerClusterBase(WorkerClusterTrainingControllerBase, WorkerClusterWorkerControllerBase, ABC):
     """
     Worker cluster interface for managing workers and training tasks
     """
