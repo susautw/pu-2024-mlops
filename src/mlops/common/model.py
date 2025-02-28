@@ -44,6 +44,8 @@ class TrainingTask(Generic[IdType]):
     name: str
     input_dir: Path
     output_dir: Path
+    task_type: str
+    version: str
     config: dict[str, Any]
     created_at: datetime
     updated_at: datetime | None

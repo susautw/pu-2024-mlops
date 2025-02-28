@@ -8,7 +8,7 @@ from mlops.common.model import WorkerStatus
 
 @dataclass
 class WorkerStartOptions:
-    task_path: str
+    task_path: str  # TODO sep input and output path
 
 
 @dataclass
@@ -18,12 +18,9 @@ class WorkerInitOptions:
     options: dict[str, Any] = field(default_factory=dict)
 
 
-class WorkerBase(ABC):
+class WorkerControllerBase(ABC):
     """
-    Base class for all workers
-
-    The worker is responsible for executing a task without communication with DB or other services.
-    Its can only communicate with File System or other local resources.
+    Base class for all worker controllers
     """
 
     @abstractmethod
@@ -47,6 +44,15 @@ class WorkerBase(ABC):
         """
         Stop the worker
         """
+
+
+class WorkerBase(WorkerControllerBase, ABC):
+    """
+    Base class for all workers
+
+    The worker is responsible for executing a task without communication with DB or other services.
+    Its can only communicate with File System or other local resources.
+    """
 
     @abstractmethod
     def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
