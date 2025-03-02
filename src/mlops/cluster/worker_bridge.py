@@ -45,7 +45,7 @@ class WorkerBridge(WorkerControllerBase):
     def __init__(self, channel: grpc.Channel):
         self.channel = channel
         self.worker_stub = worker_pb2_grpc.WorkerStub(channel)
-        self._finalizer = weakref.finalize(self, self.__finalize)  # Destructor
+        self.__finalizer = weakref.finalize(self, self.__finalize)  # Destructor
 
     def get_status(self) -> WorkerStatus:
         raw_status: messages_pb2.WorkerStatus = self.worker_stub.GetStatus(empty_pb2.Empty())
@@ -76,7 +76,7 @@ class WorkerBridge(WorkerControllerBase):
         self.channel.close()
 
     def close(self) -> None:
-        self._finalizer()
+        self.__finalizer()
 
 
 class CachedWorkerBridgeRecord(NamedTuple):
@@ -97,6 +97,7 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
         self._clean_thread = threading.Thread(target=self._clean)
         self._close_event = threading.Event()
         self._cache_lock = rwlock.RWLockFair()
+        self.__finalizer = weakref.finalize(self, self.__finalize)
 
     def _clean(self):
         while not self._close_event.wait(0):
@@ -129,3 +130,10 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
         channel = grpc.insecure_channel(f'{worker_connection_info.host}:{worker_connection_info.port}')
         bridge = WorkerBridge(channel)  # channel will be closed by the bridge automatically when it is destructed
         return CachedWorkerBridgeRecord(bridge=bridge, breath=self.INITIAL_BREATH_SEC)
+
+    def __finalize(self):
+        self._close_event.set()
+        self._clean_thread.join()
+
+    def close(self):
+        self.__finalizer()
