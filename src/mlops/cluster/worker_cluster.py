@@ -35,7 +35,7 @@ class WorkerCluster(WorkerClusterBase):
 
         bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
         bridge.start(WorkerStartOptions(
-            task_path=str(task.input_dir)  # TODO: add output dir
+            task_path=str(task.base_dir)
         ))
 
         return worker.status

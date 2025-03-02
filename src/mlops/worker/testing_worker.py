@@ -94,31 +94,33 @@ class TestingWorker(WorkerBase):
                     sleep(10)
                     continue
 
-                task_path = self._current_task_path
-            if not (task_path / 'config.json').is_file():
-                self._end_task(task_path, False)
+                output_path = self._current_task_path / 'output'
+                assert not output_path.is_file()
+                output_path.mkdir(parents=True, exist_ok=True)
+            if not (output_path / 'config.json').is_file():
+                self._end_task(output_path, False)
                 continue
 
             try:
-                cfg = json.load((task_path / 'config.json').open())
+                cfg = json.load((output_path / 'config.json').open())
             except json.JSONDecodeError:
-                self._end_task(task_path, False)
+                self._end_task(output_path, False)
                 continue
 
             if not isinstance(cfg, dict):
-                self._end_task(task_path, False)
+                self._end_task(output_path, False)
                 continue
 
             num = cfg.get('num', 5)
 
-            record_file = task_path / 'record.txt'
+            record_file = output_path / 'record.txt'
             with record_file.open('w+') as record:
                 cur = record_file.read_text()
                 cur = int(cur) if cur != "" else 0
                 record.write(str(cur + num))
 
                 if cur >= num:
-                    self._end_task(task_path, True)
+                    self._end_task(output_path, True)
 
     def _end_task(self, task_path: Path, success: bool) -> None:
         with task_path / 'status.txt' as status_file:
