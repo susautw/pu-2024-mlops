@@ -6,7 +6,7 @@ from mlops.common.model import TrainingTask
 class TrainingTaskRepositoryBase(ABC):
 
     @abstractmethod
-    def get_by_id(self, task_id: int) -> TrainingTask[int]:
+    def get_by_id(self, task_id: int) -> TrainingTask:
         """
         Get a task by its id
 
@@ -16,7 +16,7 @@ class TrainingTaskRepositoryBase(ABC):
         """
 
     @abstractmethod
-    def create(self, task: TrainingTask[None]) -> TrainingTask[int]:
+    def create(self, task: TrainingTask[None]) -> TrainingTask:
         """
         Create a task
 
@@ -26,7 +26,7 @@ class TrainingTaskRepositoryBase(ABC):
         """
 
     @abstractmethod
-    def update(self, task: TrainingTask[int]) -> TrainingTask[int]:
+    def update(self, task: TrainingTask) -> TrainingTask:
         """
         Update a task
 

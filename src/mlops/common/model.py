@@ -1,18 +1,56 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, TypeVar
-
-from typing_extensions import Generic
-
+from typing import Any
 
 @dataclass
 class TrainingStatus:
-    name: str
+    """
+    Represents the status of a training task, tracking both its current (active) state and its historical states.
+
+    This class encapsulates the details of a training task's progress. A task may have several historical
+    status records along with one active status record. When determining the overall status of a task, follow this procedure:
+
+    1. Retrieve the most recent historical status.
+    2. If the most recent historical status is incomplete, consider the active status as the current state.
+
+    The active status reflects the task's live state and is converted into a historical status when any of the
+    following conditions are met:
+
+    - The task is marked as completed.
+    - There is a change in the task's phase or description.
+    - A specified time interval has elapsed.
+    """
+
+    task_id: str
+    """
+    A unique identifier for the training task.
+    """
+
     phase: str
+    """
+    The current phase of the task (e.g., 'initializing', 'training', 'completed').
+    """
+
     progress: float
+    """
+    The task's progress as a percentage (0.0 to 100.0).
+    """
+
     description: str
+    """
+    Additional details about the task's current status.
+    """
+
     is_complete: bool
+    """
+    Indicates whether the task has been completed.
+    """
+
+    updated_at: datetime
+    """
+    The timestamp of the last status update.
+    """
 
 
 @dataclass
@@ -35,11 +73,8 @@ class WorkerData:
     options: dict[str, Any]
 
 
-IdType = TypeVar('IdType', int, None)
-
-
 @dataclass
-class TrainingTask(Generic[IdType]):
+class TrainingTask[IdType: (str, None) = str]:
     """
     Training task data class.
 
@@ -63,7 +98,7 @@ class TrainingTask(Generic[IdType]):
 
         teamspace
             ├── tasks
-            │   ├──base
+            │   ├── base
             │      ├──input -> teamspace/datasets/input
             │      └── output
             └── datasets

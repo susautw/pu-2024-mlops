@@ -51,7 +51,7 @@ class WorkerStorageBase(ABC):
         """
 
     @abstractmethod
-    def get_first_idle_by_type(self, worker_type: str) -> WorkerRecord | None:
+    def get_first_idle_by_type(self, task_type: str) -> WorkerRecord | None:
         """
         Get first idle worker by worker type
 

@@ -19,20 +19,20 @@ class TestingWorker(WorkerBase):
     _status: WorkerStatus
     _current_task_path: Path | None = None
     _task_thread: threading.Thread
-    _cluster: WorkerClusterWorkerControllerBase = None
+    _cluster: WorkerClusterWorkerControllerBase | None = None
 
-    __TYPE__ = 'testing'
-    __VERSION__ = '0.1.0'
+    __TYPE__ = "testing"
+    __VERSION__ = "0.1.0"
 
     def __init__(self):
         self._status = WorkerStatus(
-            id='',
+            id="",
             task_type=self.__TYPE__,
             version=self.__VERSION__,
             healthy=False,
             has_task=False,
             joined_at=None,
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
         self._status_lock = threading.RLock()
         self._close = threading.Event()
@@ -60,14 +60,18 @@ class TestingWorker(WorkerBase):
             self._current_task_path = None
             self._report_status()
 
-    def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
-        worker_id = cluster.check_in(WorkerData(
-            host=options.host,
-            port=options.port,
-            task_type=self.__TYPE__,
-            version=self.__VERSION__,
-            options={}
-        ))
+    def init(
+        self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions
+    ) -> None:
+        worker_id = cluster.check_in(
+            WorkerData(
+                host=options.host,
+                port=options.port,
+                task_type=self.__TYPE__,
+                version=self.__VERSION__,
+                options={},
+            )
+        )
 
         with self._status_lock:
             self._status.id = worker_id
@@ -90,19 +94,27 @@ class TestingWorker(WorkerBase):
     def _loop(self) -> None:
         while not self._close.wait(0):
             with self._status_lock:
-                if not self._status.has_task or self._status.joined_at is None or not self._status.healthy:
+                if (
+                    not self._status.has_task
+                    or self._status.joined_at is None
+                    or not self._status.healthy
+                ):
                     sleep(10)
                     continue
 
-                output_path = self._current_task_path / 'output'
+                if self._current_task_path is None:
+                    self.stop()
+                    continue
+
+                output_path = self._current_task_path / "output"
                 assert not output_path.is_file()
                 output_path.mkdir(parents=True, exist_ok=True)
-            if not (output_path / 'config.json').is_file():
+            if not (output_path / "config.json").is_file():
                 self._end_task(output_path, False)
                 continue
 
             try:
-                cfg = json.load((output_path / 'config.json').open())
+                cfg = json.load((output_path / "config.json").open())
             except json.JSONDecodeError:
                 self._end_task(output_path, False)
                 continue
@@ -111,10 +123,10 @@ class TestingWorker(WorkerBase):
                 self._end_task(output_path, False)
                 continue
 
-            num = cfg.get('num', 5)
+            num = cfg.get("num", 5)
 
-            record_file = output_path / 'record.txt'
-            with record_file.open('w+') as record:
+            record_file = output_path / "record.txt"
+            with record_file.open("w+") as record:
                 cur = record_file.read_text()
                 cur = int(cur) if cur != "" else 0
                 record.write(str(cur + num))
@@ -123,9 +135,9 @@ class TestingWorker(WorkerBase):
                     self._end_task(output_path, True)
 
     def _end_task(self, task_path: Path, success: bool) -> None:
-        with task_path / 'status.txt' as status_file:
-            status_file.write('success' if success else 'failure')
+        with (task_path / "status.txt").open("r+") as status_file:
+            status_file.write("success" if success else "failure")
         self.stop()
 
     def __repr__(self):
-        return f'<TestingWorker version={self.__VERSION__} status={self.get_status()}>'
+        return f"<TestingWorker version={self.__VERSION__} status={self.get_status()}>"

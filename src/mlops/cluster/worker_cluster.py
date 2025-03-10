@@ -47,7 +47,7 @@ class WorkerCluster(WorkerClusterBase):
         pass
 
     def check_in(self, worker_data: WorkerData) -> str:
-        pass
+        raise NotImplementedError
 
     def report_status(self, worker_status: WorkerStatus) -> None:
         pass

@@ -1,9 +1,9 @@
+from dataclasses import dataclass
 import threading
 import time
 import weakref
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import NamedTuple
 
 import grpc
 from google.protobuf import empty_pb2, timestamp_pb2
@@ -41,7 +41,7 @@ class WorkerBridgeFactoryBase(ABC):
         """
 
 
-class WorkerBridge(WorkerControllerBase):
+class WorkerBridge(WorkerBridgeBase):
     def __init__(self, channel: grpc.Channel):
         self.channel = channel
         self.worker_stub = worker_pb2_grpc.WorkerStub(channel)
@@ -79,7 +79,8 @@ class WorkerBridge(WorkerControllerBase):
         self.__finalizer()
 
 
-class CachedWorkerBridgeRecord(NamedTuple):
+@dataclass
+class CachedWorkerBridgeRecord:
     bridge: WorkerBridge
     breath: int
 

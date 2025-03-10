@@ -36,7 +36,7 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
         self.stub.ReportTrainingStatus(worker_cluster_pb2.ReportTrainingStatusRequest(
             worker_id=worker_id,
             status=messages_pb2.TrainingStatus(
-                name=training_status.name,
+                name=training_status.task_id,  # TODO rename name to task_id
                 phase=training_status.phase,
                 progress=training_status.progress,
                 description=training_status.description,
@@ -44,7 +44,7 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
             ) if training_status is not None else None
         ))
 
-    def _to_timestamp(self, dt: datetime | None) -> timestamp_pb2:
+    def _to_timestamp(self, dt: datetime | None) -> timestamp_pb2.Timestamp | None:
         if dt is None:
             return None
         ts = timestamp_pb2.Timestamp()
