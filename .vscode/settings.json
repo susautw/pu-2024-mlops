@@ -3,5 +3,25 @@
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true
-    }
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.displayEnglishDiagnostics": true,
+    "python.analysis.ignore": [
+        "**/protos"
+    ],
+    "python.analysis.importFormat": "relative",
+    "python.analysis.inlayHints.callArgumentNames": "off",
+    "python.analysis.languageServerMode": "full",
+    "python.analysis.showOnlyDirectDependenciesInAutoImport": true,
+    "python.analysis.supportDocstringTemplate": true,
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.typeEvaluation.deprecateTypingAliases": true,
+    "python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
 }
