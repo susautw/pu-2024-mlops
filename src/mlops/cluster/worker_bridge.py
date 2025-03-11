@@ -14,7 +14,7 @@ from mlops.common.model import WorkerStatus
 from mlops.protos import worker_pb2_grpc, messages_pb2, worker_pb2
 from mlops.worker.interfaces import WorkerControllerBase, WorkerStartOptions
 
-__ALL__ = ['WorkerBridgeBase', 'WorkerBridgeFactoryBase', 'WorkerBridge', 'WorkerBridgeFactory']
+__ALL__ = ["WorkerBridgeBase", "WorkerBridgeFactoryBase", "WorkerBridge", "WorkerBridgeFactory"]
 
 
 class WorkerBridgeBase(WorkerControllerBase, ABC):
@@ -63,11 +63,7 @@ class WorkerBridge(WorkerBridgeBase):
         return timestamp.ToDatetime()
 
     def start(self, options: WorkerStartOptions) -> None:
-        self.worker_stub.StartWorker(
-            worker_pb2.StartWorkerRequest(
-                task_path=options.task_path
-            )
-        )
+        self.worker_stub.StartWorker(worker_pb2.StartWorkerRequest(task_path=options.task_path))
 
     def stop(self) -> None:
         self.worker_stub.StopWorker(empty_pb2.Empty())
@@ -128,7 +124,7 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
         return record.bridge
 
     def _create_bridge(self, worker_connection_info: WorkerConnectionInfo) -> CachedWorkerBridgeRecord:
-        channel = grpc.insecure_channel(f'{worker_connection_info.host}:{worker_connection_info.port}')
+        channel = grpc.insecure_channel(f"{worker_connection_info.host}:{worker_connection_info.port}")
         bridge = WorkerBridge(channel)  # channel will be closed by the bridge automatically when it is destructed
         return CachedWorkerBridgeRecord(bridge=bridge, breath=self.INITIAL_BREATH_SEC)
 

@@ -4,7 +4,6 @@ from mlops.common.model import TrainingTask
 
 
 class TrainingTaskRepositoryBase(ABC):
-
     @abstractmethod
     def get_by_id(self, task_id: int) -> TrainingTask:
         """

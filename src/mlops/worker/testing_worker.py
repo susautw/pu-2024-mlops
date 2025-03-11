@@ -60,9 +60,7 @@ class TestingWorker(WorkerBase):
             self._current_task_path = None
             self._report_status()
 
-    def init(
-        self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions
-    ) -> None:
+    def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
         worker_id = cluster.check_in(
             WorkerData(
                 host=options.host,
@@ -94,11 +92,7 @@ class TestingWorker(WorkerBase):
     def _loop(self) -> None:
         while not self._close.wait(0):
             with self._status_lock:
-                if (
-                    not self._status.has_task
-                    or self._status.joined_at is None
-                    or not self._status.healthy
-                ):
+                if not self._status.has_task or self._status.joined_at is None or not self._status.healthy:
                     sleep(10)
                     continue
 

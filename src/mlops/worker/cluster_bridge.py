@@ -15,34 +15,39 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
     def check_in(self, worker_data: WorkerData) -> str:
         options = struct_pb2.Struct()
         options.update(worker_data.options)
-        return self.stub.CheckIn(messages_pb2.WorkerData(
-            host=worker_data.host,
-            port=worker_data.port,
-            task_type=worker_data.task_type,
-            options=options
-        )).uuid
+        return self.stub.CheckIn(
+            messages_pb2.WorkerData(
+                host=worker_data.host, port=worker_data.port, task_type=worker_data.task_type, options=options
+            )
+        ).uuid
 
     def report_status(self, worker_status: WorkerStatus) -> None:
-        self.stub.ReportStatus(messages_pb2.WorkerStatus(
-            id=worker_status.id,
-            task_type=worker_status.task_type,
-            healthy=worker_status.healthy,
-            has_task=worker_status.has_task,
-            joined_at=self._to_timestamp(worker_status.joined_at),
-            created_at=self._to_timestamp(worker_status.created_at),
-        ))
+        self.stub.ReportStatus(
+            messages_pb2.WorkerStatus(
+                id=worker_status.id,
+                task_type=worker_status.task_type,
+                healthy=worker_status.healthy,
+                has_task=worker_status.has_task,
+                joined_at=self._to_timestamp(worker_status.joined_at),
+                created_at=self._to_timestamp(worker_status.created_at),
+            )
+        )
 
     def report_training_status(self, worker_id: str, training_status: TrainingStatus | None) -> None:
-        self.stub.ReportTrainingStatus(worker_cluster_pb2.ReportTrainingStatusRequest(
-            worker_id=worker_id,
-            status=messages_pb2.TrainingStatus(
-                name=training_status.task_id,  # TODO rename name to task_id
-                phase=training_status.phase,
-                progress=training_status.progress,
-                description=training_status.description,
-                is_completed=training_status.is_complete,
-            ) if training_status is not None else None
-        ))
+        self.stub.ReportTrainingStatus(
+            worker_cluster_pb2.ReportTrainingStatusRequest(
+                worker_id=worker_id,
+                status=messages_pb2.TrainingStatus(
+                    name=training_status.task_id,  # TODO rename name to task_id
+                    phase=training_status.phase,
+                    progress=training_status.progress,
+                    description=training_status.description,
+                    is_completed=training_status.is_complete,
+                )
+                if training_status is not None
+                else None,
+            )
+        )
 
     def _to_timestamp(self, dt: datetime | None) -> timestamp_pb2.Timestamp | None:
         if dt is None:

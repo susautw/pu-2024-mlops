@@ -7,12 +7,11 @@ from mlops.worker.interfaces import WorkerStartOptions
 
 
 class WorkerCluster(WorkerClusterBase):
-
     def __init__(
-            self,
-            storage: WorkerStorageBase,
-            worker_bridge_factory: WorkerBridgeFactoryBase,
-            task_repo: TrainingTaskRepositoryBase
+        self,
+        storage: WorkerStorageBase,
+        worker_bridge_factory: WorkerBridgeFactoryBase,
+        task_repo: TrainingTaskRepositoryBase,
     ):
         self.storage = storage
         self.task_repo = task_repo
@@ -34,9 +33,7 @@ class WorkerCluster(WorkerClusterBase):
             return None
 
         bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
-        bridge.start(WorkerStartOptions(
-            task_path=str(task.base_dir)
-        ))
+        bridge.start(WorkerStartOptions(task_path=str(task.base_dir)))
 
         return worker.status
 
