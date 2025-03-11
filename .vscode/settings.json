@@ -24,4 +24,28 @@
     "python.analysis.typeCheckingMode": "standard",
     "python.analysis.typeEvaluation.deprecateTypingAliases": true,
     "python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "type": "text-and-comment",
+            "foreground": "#FF8C00"
+        },
+        "BUG": {
+            "icon": "bug"
+        },
+        "HACK": {
+            "icon": "tools"
+        },
+        "FIXME": {
+            "icon": "flame"
+        },
+        "XXX": {
+            "icon": "x"
+        },
+        "[ ]": {
+            "icon": "issue-draft"
+        },
+        "[x]": {
+            "icon": "issue-closed"
+        }
+    },
 }
