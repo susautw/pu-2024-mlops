@@ -38,7 +38,7 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
             worker_cluster_pb2.ReportTrainingStatusRequest(
                 worker_id=worker_id,
                 status=messages_pb2.TrainingStatus(
-                    name=training_status.task_id,  # TODO rename name to task_id
+                    task_id=training_status.task_id,
                     phase=training_status.phase,
                     progress=training_status.progress,
                     description=training_status.description,

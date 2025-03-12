@@ -7,7 +7,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import messages_pb2 as messages__pb2
 import worker_cluster_pb2 as worker__cluster__pb2
 
-GRPC_GENERATED_VERSION = '1.68.0'
+GRPC_GENERATED_VERSION = '1.68.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -67,7 +67,8 @@ class WorkerClusterTrainingServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def GetWorkersStatus(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """TODO: Add ways to stream the status of all workers or a specific worker
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

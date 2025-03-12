@@ -7,7 +7,7 @@ import "google/protobuf/struct.proto";
 
 
 message TrainingStatus {
-  string task_id = 1;  // TODO change all related fields to string task_id
+  string task_id = 1;
   string phase = 2;
   float progress = 3;
   string description = 4;

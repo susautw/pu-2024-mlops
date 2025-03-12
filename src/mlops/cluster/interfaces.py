@@ -26,7 +26,7 @@ class WorkerClusterTrainingControllerBase(ABC):
         """
 
     @abstractmethod
-    def assign_training_task(self, task_id: int) -> WorkerStatus | None:
+    def assign_training_task(self, task_id: str) -> WorkerStatus | None:
         """
         Assign a training task to a worker
 
@@ -35,7 +35,7 @@ class WorkerClusterTrainingControllerBase(ABC):
         """
 
     @abstractmethod
-    def get_training_status(self, task_id: int) -> TrainingStatus | None:
+    def get_training_status(self, task_id: str) -> TrainingStatus | None:
         """
         Get the status of a training task
 
@@ -44,7 +44,7 @@ class WorkerClusterTrainingControllerBase(ABC):
         """
 
     @abstractmethod
-    def pause_training_task(self, task_id: int) -> None:
+    def pause_training_task(self, task_id: str) -> None:
         """
         Pause a training task
 

@@ -26,7 +26,7 @@ class WorkerCluster(WorkerClusterBase):
             return None
         return record.status
 
-    def assign_training_task(self, task_id: int) -> WorkerStatus | None:
+    def assign_training_task(self, task_id: str) -> WorkerStatus | None:
         task = self.task_repo.get_by_id(task_id)
         worker = self.storage.get_first_idle_by_type(task.task_type)
         if worker is None:
@@ -37,10 +37,10 @@ class WorkerCluster(WorkerClusterBase):
 
         return worker.status
 
-    def get_training_status(self, task_id: int) -> TrainingStatus | None:
+    def get_training_status(self, task_id: str) -> TrainingStatus | None:
         pass
 
-    def pause_training_task(self, task_id: int) -> None:
+    def pause_training_task(self, task_id: str) -> None:
         pass
 
     def check_in(self, worker_data: WorkerData) -> str:

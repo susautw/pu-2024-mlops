@@ -22,8 +22,8 @@ class GetWorkerStatusRequest(_message.Message):
 class TaskRequest(_message.Message):
     __slots__ = ("task_id",)
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
-    task_id: int
-    def __init__(self, task_id: _Optional[int] = ...) -> None: ...
+    task_id: str
+    def __init__(self, task_id: _Optional[str] = ...) -> None: ...
 
 class CheckInResponse(_message.Message):
     __slots__ = ("uuid",)
