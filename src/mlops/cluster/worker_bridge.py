@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import threading
 import time
-import weakref
+from typing import override
 from abc import ABC, abstractmethod
 from datetime import datetime
 
@@ -22,6 +22,9 @@ class WorkerBridgeBase(WorkerControllerBase, ABC):
     def close(self) -> None:
         """
         Close the bridge
+
+        .. note::
+            This method is idempotent
         :return:
         """
 
@@ -40,13 +43,23 @@ class WorkerBridgeFactoryBase(ABC):
         :return:
         """
 
+    @abstractmethod
+    def close(self) -> None:
+        """
+        Close the factory
+
+        .. note::
+            This method is idempotent
+        :return:
+        """
+
 
 class WorkerBridge(WorkerBridgeBase):
     def __init__(self, channel: grpc.Channel):
         self.channel = channel
         self.worker_stub = worker_pb2_grpc.WorkerStub(channel)
-        self.__finalizer = weakref.finalize(self, self.__finalize)  # Destructor
 
+    @override
     def get_status(self) -> WorkerStatus:
         raw_status: messages_pb2.WorkerStatus = self.worker_stub.GetStatus(empty_pb2.Empty())
         return WorkerStatus(
@@ -62,17 +75,21 @@ class WorkerBridge(WorkerBridgeBase):
     def _to_datetime(self, timestamp: timestamp_pb2.Timestamp) -> datetime:
         return timestamp.ToDatetime()
 
+    @override
     def start(self, options: WorkerStartOptions) -> None:
         self.worker_stub.StartWorker(worker_pb2.StartWorkerRequest(task_path=options.task_path))
 
+    @override
     def stop(self) -> None:
         self.worker_stub.StopWorker(empty_pb2.Empty())
 
-    def __finalize(self) -> None:
+    @override
+    def close(self) -> None:
+        # Channel.close() is idempotent so it is safe to call it multiple times
         self.channel.close()
 
-    def close(self) -> None:
-        self.__finalizer()
+    def __del__(self) -> None:
+        self.close()
 
 
 @dataclass
@@ -94,7 +111,6 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
         self._clean_thread = threading.Thread(target=self._clean)
         self._close_event = threading.Event()
         self._cache_lock = rwlock.RWLockFair()
-        self.__finalizer = weakref.finalize(self, self.__finalize)
 
     def _clean(self):
         while not self._close_event.wait(0):
@@ -106,6 +122,7 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
                         self._cached_bridges.pop(key, None)
             time.sleep(1)
 
+    @override
     def get_worker_bridge(self, worker_connection_info: WorkerConnectionInfo) -> WorkerBridge:
         with self._cache_lock.gen_rlock():
             record = self._cached_bridges.get(worker_connection_info)
@@ -128,9 +145,11 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
         bridge = WorkerBridge(channel)  # channel will be closed by the bridge automatically when it is destructed
         return CachedWorkerBridgeRecord(bridge=bridge, breath=self.INITIAL_BREATH_SEC)
 
-    def __finalize(self):
-        self._close_event.set()
-        self._clean_thread.join()
-
+    @override
     def close(self):
-        self.__finalizer()
+        self._close_event.set()
+        if self._clean_thread.is_alive():  # Check alive to avoid joining a dead thread
+            self._clean_thread.join()
+
+    def __del__(self):
+        self.close()

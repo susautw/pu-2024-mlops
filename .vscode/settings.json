@@ -6,7 +6,8 @@
     },
     "[python]": {
         "editor.formatOnSave": true,
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
     "python.analysis.autoFormatStrings": true,
     "python.analysis.autoImportCompletions": true,
