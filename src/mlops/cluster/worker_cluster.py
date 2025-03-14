@@ -1,5 +1,5 @@
 from mlops.cluster.interfaces import WorkerClusterBase
-from mlops.cluster.storages.interfaces import WorkerStorageBase
+from mlops.cluster.storages.worker_storage_base import WorkerStorageBase
 from mlops.cluster.worker_bridge import WorkerBridgeFactoryBase
 from mlops.common.model import TrainingStatus, WorkerStatus, WorkerData
 from mlops.common.repos.interfaces import TrainingTaskRepositoryBase
@@ -18,7 +18,7 @@ class WorkerCluster(WorkerClusterBase):
         self.worker_bridge_factory = worker_bridge_factory
 
     def get_workers_status(self) -> list[WorkerStatus]:
-        return [w.status for w in self.storage.get_all()]
+        return [w.status for w in self.storage.values()]
 
     def get_worker_status(self, worker_id: str) -> WorkerStatus | None:
         record = self.storage.get(worker_id)

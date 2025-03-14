@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
 from mlops.cluster.model import WorkerRecord
+from mlops.cluster.storages import CommonStorageBase
 
 
-class WorkerStorageBase(ABC):
+class WorkerStorageBase(CommonStorageBase[str, WorkerRecord], ABC):
     """
     Interface for worker storage classes
 
@@ -11,24 +12,7 @@ class WorkerStorageBase(ABC):
     """
 
     @abstractmethod
-    def get(self, worker_id: str) -> WorkerRecord | None:
-        """
-        Get worker record by worker id
-
-        :param worker_id: id of worker
-        :return: WorkerStatus object if worker exists, None otherwise
-        """
-
-    @abstractmethod
-    def get_all(self) -> list[WorkerRecord]:
-        """
-        Get all worker records
-
-        :return: list of WorkerStatus objects
-        """
-
-    @abstractmethod
-    def save(self, worker_record: WorkerRecord):
+    def save(self, worker_record: WorkerRecord) -> None:
         """
         save worker status
 
@@ -42,12 +26,6 @@ class WorkerStorageBase(ABC):
 
         :param worker_id: id of worker
         :return: True if worker was deleted, False otherwise
-        """
-
-    @abstractmethod
-    def clear(self) -> None:
-        """
-        Clear all worker status
         """
 
     @abstractmethod
