@@ -17,6 +17,8 @@ class WorkerCluster(WorkerClusterBase):
         self.task_repo = task_repo
         self.worker_bridge_factory = worker_bridge_factory
 
+        # TODO: add worker cleanup thread
+
     def get_workers_status(self) -> list[WorkerStatus]:
         return [w.status for w in self.storage.values()]
 
@@ -28,12 +30,19 @@ class WorkerCluster(WorkerClusterBase):
 
     def assign_training_task(self, task_id: str) -> WorkerStatus | None:
         task = self.task_repo.get_by_id(task_id)
-        worker = self.storage.get_first_idle_by_type(task.task_type)
-        if worker is None:
-            return None
 
-        bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
-        bridge.start(WorkerStartOptions(task_path=str(task.base_dir)))
+        with self.storage.transaction() as tx:
+            worker = tx.get_first_idle_by_type(task.task_type)
+            if worker is None:
+                return None
+
+            bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
+            bridge.start(WorkerStartOptions(task_path=str(task.base_dir)))
+
+            #! assing task id to worker, the assigned task id should be cleared when
+            #! the worker is done with the task (reporting status with has_task=False)
+            worker = worker.with_task_id(task_id)
+            tx.save(worker)
 
         return worker.status
 

@@ -105,17 +105,25 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
                 raise KeyError(key)
             entry.new_value = DELETED
 
-    def get_for_update(self, key: K) -> V:
+    @overload
+    def get_for_update(self, key: K) -> V: ...
+    @overload
+    def get_for_update[D](self, key: K, default: D) -> V | D: ...
+    def get_for_update[D](self, key: K, default: D = NotImplemented) -> V | D:
         tx = self.__validate_tx()
         with self._cond:
             if key not in self._data:
                 raise KeyError(key)
             entry = self.__get_entry(key, tx)
             if entry is None or isinstance(entry.dirty_value, _Marker):
+                if default is not NotImplemented:
+                    return default
                 raise KeyError(key)
             return entry.dirty_value
 
-    def search_for_update(self, predicate: Callable[[K, V], bool], *, limit: int | None) -> Iterable[tuple[K, V]]:
+    def search_for_update(
+        self, predicate: Callable[[K, V], bool], *, limit: int | None = None
+    ) -> Iterable[tuple[K, V]]:
         tx = self.__validate_tx()
         results = []
         with self._cond:

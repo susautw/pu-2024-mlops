@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable, MutableMapping
-from typing import Self
+from typing import Self, overload
 
 from mlops.cluster.storages import TransactionBase
 
@@ -22,7 +22,14 @@ class CommonStorageBase[K, V](MutableMapping[K, V], ABC):
         :return: A context manager for the transaction.
         """
 
-    def get_for_update(self, key: K) -> V:
+    @abstractmethod
+    @overload
+    def get_for_update(self, key: K) -> V: ...
+    @abstractmethod
+    @overload
+    def get_for_update[D](self, key: K, default: D) -> V | D: ...
+    @abstractmethod
+    def get_for_update[D](self, key: K, default: D = NotImplemented) -> V | D:
         """
         Get an item from the storage for update.
 
@@ -40,10 +47,11 @@ class CommonStorageBase[K, V](MutableMapping[K, V], ABC):
         :return: The item associated with the key.
         :raises KeyError: If the key does not exist in the storage.
         """
-        return self[key]
 
     @abstractmethod
-    def search_for_update(self, predicate: Callable[[K, V], bool], *, limit: int | None) -> Iterable[tuple[K, V]]:
+    def search_for_update(
+        self, predicate: Callable[[K, V], bool], *, limit: int | None = None
+    ) -> Iterable[tuple[K, V]]:
         """
         Search for an item in the storage for update.
 

@@ -1,5 +1,5 @@
 from collections.abc import Callable, Iterable, Iterator
-from typing import Self
+from typing import Self, overload
 from mlops.cluster.model import WorkerRecord
 from mlops.cluster.storages import CommonStorageBase, TransactionBase
 from mlops.cluster.storages.worker_storage_base import WorkerStorageBase
@@ -31,9 +31,8 @@ class WorkerStorage(WorkerStorageBase):
         return None
 
     def cleanup(self):
-        for worker_id in list(self._workers.keys()):
-            if not self._workers[worker_id].status.healthy:
-                del self._workers[worker_id]
+        for worker_id, _ in list(self._workers.search_for_update(lambda _, v: not v.status.healthy)):
+            self.delete(worker_id)
 
     def __iter__(self) -> Iterator[str]:
         return iter(self._workers)
@@ -57,9 +56,18 @@ class WorkerStorage(WorkerStorageBase):
         return self._workers.pop(worker_id, None) is not None
 
     def search_for_update(
-        self, predicate: Callable[[str, WorkerRecord], bool], *, limit: int | None
+        self, predicate: Callable[[str, WorkerRecord], bool], *, limit: int | None = None
     ) -> Iterable[tuple[str, WorkerRecord]]:
         return self._workers.search_for_update(predicate, limit=limit)
+
+    @overload
+    def get_for_update(self, key: str) -> WorkerRecord: ...
+
+    @overload
+    def get_for_update[D](self, key: str, default: D) -> WorkerRecord | D: ...
+
+    def get_for_update[D](self, key: str, default: D = NotImplemented) -> WorkerRecord | D:
+        return self._workers.get_for_update(key, default=default)
 
 
 class _Transaction(TransactionBase):
