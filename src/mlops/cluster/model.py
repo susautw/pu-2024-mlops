@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import NamedTuple
 
 from mlops.common.model import WorkerStatus
@@ -24,8 +25,14 @@ class WorkerRecord(NamedTuple):
     and cleared when the worker is done with the task. 
     """
 
+    updated_at: datetime
+    """
+    The last time the worker status was updated.
+    This field is only respect to the `status` field.
+    """
+
     def with_status(self, status: WorkerStatus) -> "WorkerRecord":
-        return WorkerRecord(status, self.connection, self.current_task_id)
+        return WorkerRecord(status, self.connection, self.current_task_id, datetime.now())
 
     def with_task_id(self, task_id: str | None) -> "WorkerRecord":
-        return WorkerRecord(self.status, self.connection, task_id)
+        return WorkerRecord(self.status, self.connection, task_id, self.updated_at)

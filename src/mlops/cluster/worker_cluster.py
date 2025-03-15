@@ -15,11 +15,13 @@ class WorkerCluster(WorkerClusterBase):
         worker_bridge_factory: WorkerBridgeFactoryBase,
         task_repo: TrainingTaskRepositoryBase,
         clear_interval: int = 60,
+        force_update_threshold: int = 120,
     ):
         self.storage = storage
         self.task_repo = task_repo
         self.worker_bridge_factory = worker_bridge_factory
         self.clear_interval = clear_interval
+        self.force_update_threshold = force_update_threshold
 
         self._cleanup_thread = threading.Thread(target=self.__thread_cleanup_workers)
         self._close_event = threading.Event()
@@ -42,6 +44,14 @@ class WorkerCluster(WorkerClusterBase):
         record = self.storage.get(worker_id)
         if record is None:
             return None
+        if record.updated_at.timestamp() + self.force_update_threshold < time.time():
+            #! force update the worker status
+            # TODO research error handling in grpc
+            bridge = self.worker_bridge_factory.get_worker_bridge(record.connection)
+            status = bridge.get_status()
+            record = record.with_status(status)
+            with self.storage.transaction() as tx:
+                tx.save(record)
         return record.status
 
     def assign_training_task(self, task_id: str) -> WorkerStatus | None:
@@ -52,13 +62,15 @@ class WorkerCluster(WorkerClusterBase):
             if worker is None:
                 return None
 
-            bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
-            bridge.start(WorkerStartOptions(task_path=str(task.base_dir)))
-
             #! assing task id to worker, the assigned task id should be cleared when
             #! the worker is done with the task (reporting status with has_task=False)
             worker = worker.with_task_id(task_id)
             tx.save(worker)
+
+        bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
+        bridge.start(WorkerStartOptions(task_path=str(task.base_dir)))
+        # TODO: if error occurs, should clear the task id from the worker record immediately
+        # TODO: may also need to mark the worker as unhealthy according to the error
 
         return worker.status
 

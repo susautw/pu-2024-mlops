@@ -21,6 +21,9 @@ class WorkerClusterTrainingControllerBase(ABC):
         """
         Get the status of a specific worker
 
+        If the worker has no updates for a while, the cluster should consider to force
+        update the worker status
+
         :param worker_id: the worker id
         :return: WorkerStatus object or None if worker not found
         """
