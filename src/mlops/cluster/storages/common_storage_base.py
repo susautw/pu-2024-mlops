@@ -16,20 +16,16 @@ class CommonStorageBase[K, V](MutableMapping[K, V], ABC):
     def transaction(self) -> TransactionBase[Self]:
         """
         Create a transaction context manager for the storage.
-        This method should be implemented to provide a context manager that can be used to
-        perform atomic operations on the storage.
 
-        :return: A context manager for the transaction.
+        This method will return a context manager that resolves a storage instance when entered.
+        The storage instance MUST be associated with the transaction and should be used to perform transcational operations.
+
+        :return: A context manager for the transactional storage.
         """
 
     @abstractmethod
     @overload
-    def get_for_update(self, key: K) -> V: ...
-    @abstractmethod
-    @overload
-    def get_for_update[D](self, key: K, default: D) -> V | D: ...
-    @abstractmethod
-    def get_for_update[D](self, key: K, default: D = NotImplemented) -> V | D:
+    def get_for_update(self, key: K) -> V:
         """
         Get an item from the storage for update.
 
@@ -43,9 +39,28 @@ class CommonStorageBase[K, V](MutableMapping[K, V], ABC):
             If the transaction is rolled back, the changes will be discarded.
 
         :param key: The key of the item to get.
-        :param predicate: A predicate function to filter the item.
         :return: The item associated with the key.
         :raises KeyError: If the key does not exist in the storage.
+        """
+
+    @abstractmethod
+    @overload
+    def get_for_update[D](self, key: K, default: D) -> V | D:
+        """
+        Get an item from the storage for update with a default value.
+
+        .. note::
+            This method should be used within a transaction context.
+
+            The item will be locked for update until the transaction is exited.
+
+            If the transaction is committed, the changes will be saved.
+
+            If the transaction is rolled back, the changes will be discarded.
+
+        :param key: The key of the item to get.
+        :param default: The default value to return if the key does not exist.
+        :return: The item associated with the key or the default value if the key does not exist.
         """
 
     @abstractmethod

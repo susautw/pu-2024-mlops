@@ -1,3 +1,5 @@
+import threading
+import time
 from mlops.cluster.interfaces import WorkerClusterBase
 from mlops.cluster.storages.worker_storage_base import WorkerStorageBase
 from mlops.cluster.worker_bridge import WorkerBridgeFactoryBase
@@ -12,12 +14,26 @@ class WorkerCluster(WorkerClusterBase):
         storage: WorkerStorageBase,
         worker_bridge_factory: WorkerBridgeFactoryBase,
         task_repo: TrainingTaskRepositoryBase,
+        clear_interval: int = 60,
     ):
         self.storage = storage
         self.task_repo = task_repo
         self.worker_bridge_factory = worker_bridge_factory
+        self.clear_interval = clear_interval
 
-        # TODO: add worker cleanup thread
+        self._cleanup_thread = threading.Thread(target=self.__thread_cleanup_workers)
+        self._close_event = threading.Event()
+
+    def __thread_cleanup_workers(self):
+        """
+        A thread ensures that all workers are healthy.
+
+        If a worker is not healthy, remove it from the storage
+        """
+        while not self._close_event.is_set():
+            with self.storage.transaction() as tx:
+                tx.cleanup()
+            time.sleep(self.clear_interval)
 
     def get_workers_status(self) -> list[WorkerStatus]:
         return [w.status for w in self.storage.values()]
@@ -60,3 +76,10 @@ class WorkerCluster(WorkerClusterBase):
 
     def report_training_status(self, worker_id: str, training_status: TrainingStatus | None) -> None:
         pass
+
+    def __del__(self):
+        """
+        End and join the cleanup thread when the object is deleted
+        """
+        self._close_event.set()
+        self._cleanup_thread.join()
