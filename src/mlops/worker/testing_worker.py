@@ -60,7 +60,9 @@ class TestingWorker(WorkerBase):
             self._current_task_path = None
             self._report_status()
 
-    def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
+    def init(
+        self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions
+    ) -> None:
         worker_id = cluster.check_in(
             WorkerData(
                 host=options.host,

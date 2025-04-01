@@ -1,7 +1,9 @@
 from mlops.protos import worker_cluster_pb2_grpc, worker_cluster_pb2, messages_pb2
 
 
-class WorkerClusterTrainingServicer(worker_cluster_pb2_grpc.WorkerClusterTrainingServicer):
+class WorkerClusterTrainingServicer(
+    worker_cluster_pb2_grpc.WorkerClusterTrainingServicer
+):
     def GetWorkersStatus(  # noqa: N802
         self, request, context
     ) -> worker_cluster_pb2.GetWorkersStatusResponse:

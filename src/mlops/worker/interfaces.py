@@ -55,7 +55,9 @@ class WorkerBase(WorkerControllerBase, ABC):
     """
 
     @abstractmethod
-    def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
+    def init(
+        self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions
+    ) -> None:
         """
         Initialize the worker
 

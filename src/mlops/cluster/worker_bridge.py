@@ -14,7 +14,12 @@ from mlops.common.model import WorkerStatus
 from mlops.protos import worker_pb2_grpc, messages_pb2, worker_pb2
 from mlops.worker.interfaces import WorkerControllerBase, WorkerStartOptions
 
-__ALL__ = ["WorkerBridgeBase", "WorkerBridgeFactoryBase", "WorkerBridge", "WorkerBridgeFactory"]
+__ALL__ = [
+    "WorkerBridgeBase",
+    "WorkerBridgeFactoryBase",
+    "WorkerBridge",
+    "WorkerBridgeFactory",
+]
 
 
 class WorkerBridgeBase(WorkerControllerBase, ABC):
@@ -35,7 +40,9 @@ class WorkerBridgeFactoryBase(ABC):
     """
 
     @abstractmethod
-    def get_worker_bridge(self, worker_connection_info: WorkerConnectionInfo) -> WorkerBridgeBase:
+    def get_worker_bridge(
+        self, worker_connection_info: WorkerConnectionInfo
+    ) -> WorkerBridgeBase:
         """
         Get a worker bridge via the connection info
 
@@ -61,7 +68,9 @@ class WorkerBridge(WorkerBridgeBase):
 
     @override
     def get_status(self) -> WorkerStatus:
-        raw_status: messages_pb2.WorkerStatus = self.worker_stub.GetStatus(empty_pb2.Empty())
+        raw_status: messages_pb2.WorkerStatus = self.worker_stub.GetStatus(
+            empty_pb2.Empty()
+        )
         return WorkerStatus(
             id=raw_status.id,
             task_type=raw_status.task_type,
@@ -77,7 +86,9 @@ class WorkerBridge(WorkerBridgeBase):
 
     @override
     def start(self, options: WorkerStartOptions) -> None:
-        self.worker_stub.StartWorker(worker_pb2.StartWorkerRequest(task_path=options.task_path))
+        self.worker_stub.StartWorker(
+            worker_pb2.StartWorkerRequest(task_path=options.task_path)
+        )
 
     @override
     def stop(self) -> None:
@@ -123,7 +134,9 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
             time.sleep(1)
 
     @override
-    def get_worker_bridge(self, worker_connection_info: WorkerConnectionInfo) -> WorkerBridge:
+    def get_worker_bridge(
+        self, worker_connection_info: WorkerConnectionInfo
+    ) -> WorkerBridge:
         with self._cache_lock.gen_rlock():
             record = self._cached_bridges.get(worker_connection_info)
 

@@ -70,7 +70,9 @@ class WorkerStorage(WorkerStorageBase):
     @overload
     def get_for_update[D](self, key: str, default: D) -> WorkerRecord | D: ...
 
-    def get_for_update[D](self, key: str, default: D = NotImplemented) -> WorkerRecord | D:
+    def get_for_update[D](
+        self, key: str, default: D = NotImplemented
+    ) -> WorkerRecord | D:
         return self._workers.get_for_update(key, default=default)
 
 

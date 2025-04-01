@@ -140,7 +140,9 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
                     continue
                 if entry.tx is self._tx:  # Fast path for already locked entries
                     current_value = entry.dirty_value
-                    if not isinstance(current_value, _Marker) and predicate(key, current_value):
+                    if not isinstance(current_value, _Marker) and predicate(
+                        key, current_value
+                    ):
                         results.append((key, entry.value))
                         if limit is not None and len(results) >= limit:
                             break
@@ -166,7 +168,9 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
                 # Read the non-dirty current value
                 current_value = lock_entry.value
                 # Release the key if the value was changed by another transaction
-                if isinstance(current_value, _Marker) or not predicate(key, current_value):
+                if isinstance(current_value, _Marker) or not predicate(
+                    key, current_value
+                ):
                     self._data[key].tx = None
                     self._cond.notify_all()
                     continue
