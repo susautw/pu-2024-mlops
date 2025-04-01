@@ -39,7 +39,10 @@ class Args(NamedTuple):
 def get_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Start a worker")
     parser.add_argument(
-        "--cluster-bind", type=str, default="cluster:50000", help="The address of the cluster to connect to"
+        "--cluster-bind",
+        type=str,
+        default="cluster:50000",
+        help="The address of the cluster to connect to",
     )
     parser.add_argument("--host", type=str, default="0.0.0.0", help="The host to bind to")
     parser.add_argument("--port", type=int, required=True, help="The port to bind to")

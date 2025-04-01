@@ -11,6 +11,7 @@
     "ms-vscode.makefile-tools",
     "biati.vscode-show-hide-excluded-files",
     "charliermarsh.ruff",
-    "zxh404.vscode-proto3"
+    "zxh404.vscode-proto3",
+    "redis.redis-for-vscode"
   ]
 }

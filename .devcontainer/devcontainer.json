@@ -5,9 +5,16 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.13",
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker": {
+			"version": "latest",
+			"dockerDashComposeVersion": "v2",
+			"installDockerBuildx": true
+		}
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
+	"initializeCommand": "mkdir -p .devcontainer/.cache",
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "./.devcontainer/setup.sh",
 	// Configure tool-specific properties.
@@ -25,11 +32,17 @@
 				"ms-vscode.makefile-tools",
 				"biati.vscode-show-hide-excluded-files",
 				"charliermarsh.ruff",
-				"zxh404.vscode-proto3"
+				"zxh404.vscode-proto3",
+				"Redis.redis-for-vscode"
 			]
 		}
-	}
-
+	},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
+	"workspaceFolder": "${localWorkspaceFolder}",
+	"workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/.devcontainer/.cache,target=/home/vscode/.cache,type=bind,consistency=cached",
+		"source=/usr/share/bash-completion/completions/docker,target=/usr/share/bash-completion/completions/docker,type=bind,ro"
+	]
 }

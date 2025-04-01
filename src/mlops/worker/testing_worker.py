@@ -92,7 +92,11 @@ class TestingWorker(WorkerBase):
     def _loop(self) -> None:
         while not self._close.wait(0):
             with self._status_lock:
-                if not self._status.has_task or self._status.joined_at is None or not self._status.healthy:
+                if (
+                    not self._status.has_task
+                    or self._status.joined_at is None
+                    or not self._status.healthy
+                ):
                     sleep(10)
                     continue
 

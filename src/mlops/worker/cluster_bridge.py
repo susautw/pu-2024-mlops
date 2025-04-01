@@ -17,7 +17,10 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
         options.update(worker_data.options)
         return self.stub.CheckIn(
             messages_pb2.WorkerData(
-                host=worker_data.host, port=worker_data.port, task_type=worker_data.task_type, options=options
+                host=worker_data.host,
+                port=worker_data.port,
+                task_type=worker_data.task_type,
+                options=options,
             )
         ).uuid
 
@@ -33,7 +36,9 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
             )
         )
 
-    def report_training_status(self, worker_id: str, training_status: TrainingStatus | None) -> None:
+    def report_training_status(
+        self, worker_id: str, training_status: TrainingStatus | None
+    ) -> None:
         self.stub.ReportTrainingStatus(
             worker_cluster_pb2.ReportTrainingStatusRequest(
                 worker_id=worker_id,
