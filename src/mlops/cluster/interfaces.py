@@ -26,6 +26,7 @@ class WorkerClusterTrainingControllerBase(ABC):
 
         :param worker_id: the worker id
         :return: WorkerStatus object or None if worker not found
+        :raises TimeoutError: if the operation times out
         """
 
     @abstractmethod
@@ -35,6 +36,7 @@ class WorkerClusterTrainingControllerBase(ABC):
 
         :param task_id: the training task id
         :return: WorkerStatus object or None if no worker available
+        :raises TimeoutError: if the operation times out
         """
 
     @abstractmethod
@@ -54,6 +56,7 @@ class WorkerClusterTrainingControllerBase(ABC):
         No operation if the task is already paused or completed or not found
 
         :param task_id: id of the training task
+        :raises TimeoutError: if the operation times out
         """
 
 
@@ -80,7 +83,9 @@ class WorkerClusterWorkerControllerBase(ABC):
         """
 
     @abstractmethod
-    def report_training_status(self, worker_id: str, training_status: TrainingStatus | None) -> None:
+    def report_training_status(
+        self, worker_id: str, training_status: TrainingStatus | None
+    ) -> None:
         """
         Report training status
 
@@ -89,7 +94,9 @@ class WorkerClusterWorkerControllerBase(ABC):
         """
 
 
-class WorkerClusterBase(WorkerClusterTrainingControllerBase, WorkerClusterWorkerControllerBase, ABC):
+class WorkerClusterBase(
+    WorkerClusterTrainingControllerBase, WorkerClusterWorkerControllerBase, ABC
+):
     """
     Worker cluster interface for managing workers and training tasks
     """

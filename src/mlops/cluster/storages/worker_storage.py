@@ -21,7 +21,9 @@ class WorkerStorage(WorkerStorageBase):
     def get_first_idle_by_type(self, task_type: str) -> WorkerRecord | None:
         workers = list(
             self._workers.search_for_update(
-                lambda _, v: v.status.healthy and v.status.has_task is False and v.status.task_type == task_type,
+                lambda _, v: v.status.healthy
+                and v.status.has_task is False
+                and v.status.task_type == task_type,
                 limit=1,
             )
         )
@@ -31,7 +33,9 @@ class WorkerStorage(WorkerStorageBase):
         return None
 
     def cleanup(self):
-        for worker_id, _ in list(self._workers.search_for_update(lambda _, v: not v.status.healthy)):
+        for worker_id, _ in list(
+            self._workers.search_for_update(lambda _, v: not v.status.healthy)
+        ):
             self.delete(worker_id)
 
     def __iter__(self) -> Iterator[str]:

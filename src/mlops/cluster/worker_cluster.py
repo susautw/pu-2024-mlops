@@ -1,3 +1,4 @@
+from contextlib import suppress
 import threading
 import time
 from mlops.cluster.interfaces import WorkerClusterBase
@@ -33,8 +34,9 @@ class WorkerCluster(WorkerClusterBase):
         If a worker is not healthy, remove it from the storage
         """
         while not self._close_event.is_set():
-            with self.storage.transaction() as tx:
+            with suppress(TimeoutError), self.storage.transaction() as tx:
                 tx.cleanup()
+
             time.sleep(self.clear_interval)
 
     def get_workers_status(self) -> list[WorkerStatus]:
@@ -86,12 +88,22 @@ class WorkerCluster(WorkerClusterBase):
     def report_status(self, worker_status: WorkerStatus) -> None:
         pass
 
-    def report_training_status(self, worker_id: str, training_status: TrainingStatus | None) -> None:
+    def report_training_status(
+        self, worker_id: str, training_status: TrainingStatus | None
+    ) -> None:
         pass
 
-    def __del__(self):
+    def shutdown(self) -> None:
         """
-        End and join the cleanup thread when the object is deleted
+        Shutdown the worker cluster
+
+        This method is idempotent
         """
         self._close_event.set()
         self._cleanup_thread.join()
+
+    def __del__(self):
+        """
+        Shutdown the worker cluster when the object is deleted
+        """
+        self.shutdown()

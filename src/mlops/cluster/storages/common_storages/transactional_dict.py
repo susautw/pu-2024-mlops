@@ -3,7 +3,7 @@ import copy
 from dataclasses import dataclass
 import threading
 from typing import Literal, Self, final, overload
-from mlops.cluster.storages import CommonStorageBase, TransactionBase
+from .. import CommonStorageBase, TransactionBase
 
 
 class _Marker:
@@ -30,11 +30,13 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
     _data: dict[K, _Entry[V]]
     _cond: threading.Condition
     _tx: TransactionBase[Self] | None
+    _timeout: float
 
-    def __init__(self) -> None:
+    def __init__(self, timeout: float) -> None:
         self._data = {}
         self._cond = threading.Condition()
         self._tx = None
+        self._timeout = timeout
 
     def __iter__(self) -> Iterator[K]:
         with self._cond:
@@ -55,8 +57,12 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
     @overload
     def __get_entry(self, key: K, tx: TransactionBase[Self]) -> _Entry[V] | None: ...
     @overload
-    def __get_entry(self, key: K, tx: TransactionBase[Self], create: Literal[True]) -> _Entry[V]: ...
-    def __get_entry(self, key: K, tx: TransactionBase[Self], create: bool = False) -> _Entry[V] | None:
+    def __get_entry(
+        self, key: K, tx: TransactionBase[Self], create: Literal[True]
+    ) -> _Entry[V]: ...
+    def __get_entry(
+        self, key: K, tx: TransactionBase[Self], create: bool = False
+    ) -> _Entry[V] | None:
         """
         Get the entry for the key in the transaction context.
 
@@ -71,6 +77,7 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
         :param tx: The transaction context.
         :param create: If True, the entry will be created if it does not exist.
         :return: The entry for the key.
+        :raises TimeoutError: If the lock is not acquired within the timeout.
         """
         while True:
             entry = self._data.get(key, None)
@@ -82,7 +89,8 @@ class TransactionalDict[K, V](CommonStorageBase[K, V]):
             if entry.tx is None:
                 entry.tx = tx
             if entry.tx is not tx:
-                self._cond.wait()
+                if not self._cond.wait(timeout=self._timeout):
+                    raise TimeoutError(f"Timeout waiting for key {key}")
             else:
                 return entry
 

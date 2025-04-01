@@ -140,16 +140,21 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
                 record = self._cached_bridges.setdefault(worker_connection_info, record)
         return record.bridge
 
-    def _create_bridge(self, worker_connection_info: WorkerConnectionInfo) -> CachedWorkerBridgeRecord:
-        channel = grpc.insecure_channel(f"{worker_connection_info.host}:{worker_connection_info.port}")
-        bridge = WorkerBridge(channel)  # channel will be closed by the bridge automatically when it is destructed
+    def _create_bridge(
+        self, worker_connection_info: WorkerConnectionInfo
+    ) -> CachedWorkerBridgeRecord:
+        channel = grpc.insecure_channel(
+            f"{worker_connection_info.host}:{worker_connection_info.port}"
+        )
+        bridge = WorkerBridge(
+            channel
+        )  # channel will be closed by the bridge automatically when it is destructed
         return CachedWorkerBridgeRecord(bridge=bridge, breath=self.INITIAL_BREATH_SEC)
 
     @override
     def close(self):
         self._close_event.set()
-        if self._clean_thread.is_alive():  # Check alive to avoid joining a dead thread
-            self._clean_thread.join()
+        self._clean_thread.join()
 
     def __del__(self):
         self.close()
