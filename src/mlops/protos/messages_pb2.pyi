@@ -23,7 +23,7 @@ class TrainingStatus(_message.Message):
     def __init__(self, task_id: _Optional[str] = ..., phase: _Optional[str] = ..., progress: _Optional[float] = ..., description: _Optional[str] = ..., is_completed: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class WorkerStatus(_message.Message):
-    __slots__ = ("id", "task_type", "version", "healthy", "has_task", "joined_at", "created_at")
+    __slots__ = ("id", "task_type", "version", "healthy", "has_task", "joined_at", "created_at", "reported_at")
     ID_FIELD_NUMBER: _ClassVar[int]
     TASK_TYPE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
@@ -31,6 +31,7 @@ class WorkerStatus(_message.Message):
     HAS_TASK_FIELD_NUMBER: _ClassVar[int]
     JOINED_AT_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    REPORTED_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     task_type: str
     version: str
@@ -38,7 +39,8 @@ class WorkerStatus(_message.Message):
     has_task: bool
     joined_at: _timestamp_pb2.Timestamp
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., task_type: _Optional[str] = ..., version: _Optional[str] = ..., healthy: bool = ..., has_task: bool = ..., joined_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    reported_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., task_type: _Optional[str] = ..., version: _Optional[str] = ..., healthy: bool = ..., has_task: bool = ..., joined_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reported_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class WorkerData(_message.Message):
     __slots__ = ("host", "port", "task_type", "version", "options")

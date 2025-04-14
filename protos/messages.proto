@@ -25,6 +25,7 @@ message WorkerStatus {
   bool has_task = 5;
   optional google.protobuf.Timestamp joined_at = 6;
   google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp reported_at = 8;
 }
 
 message WorkerData {

@@ -79,6 +79,7 @@ class WorkerBridge(WorkerBridgeBase):
             has_task=raw_status.has_task,
             joined_at=self._to_datetime(raw_status.joined_at),
             created_at=self._to_datetime(raw_status.created_at),
+            reported_at=self._to_datetime(raw_status.reported_at),
         )
 
     def _to_datetime(self, timestamp: timestamp_pb2.Timestamp) -> datetime:

@@ -57,12 +57,44 @@ class TrainingStatus:
 @dataclass
 class WorkerStatus:
     id: str
+    """
+    A unique identifier for the worker.
+    """
+
     task_type: str
+    """
+    An identifier of the worker type. Indicates what task should be used.
+    """
+
     version: str
+    """
+    Worker version.
+    """
+
     healthy: bool
+    """
+    Indicates whether the worker is healthy or should be removed from the cluster.
+    """
+
     has_task: bool
+    """
+    Indicates whether the worker is currently assigned a task.
+    """
+
     joined_at: datetime | None
+    """
+    The timestamp when the worker joined the cluster.
+    """
+
     created_at: datetime
+    """
+    The timestamp when the worker was created.
+    """
+
+    reported_at: datetime
+    """
+    The timestamp when the worker reported its status.
+    """
 
 
 @dataclass
