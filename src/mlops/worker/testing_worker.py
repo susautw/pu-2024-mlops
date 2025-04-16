@@ -25,6 +25,7 @@ class TestingWorker(WorkerBase):
     __VERSION__ = "0.1.0"
 
     def __init__(self):
+        now = datetime.now()
         self._status = WorkerStatus(
             id="",
             task_type=self.__TYPE__,
@@ -32,7 +33,8 @@ class TestingWorker(WorkerBase):
             healthy=False,
             has_task=False,
             joined_at=None,
-            created_at=datetime.now(),
+            created_at=now,
+            reported_at=now,
         )
         self._status_lock = threading.RLock()
         self._close = threading.Event()
@@ -42,7 +44,10 @@ class TestingWorker(WorkerBase):
 
     def _report_status(self):
         if self._cluster is not None:
-            self._cluster.report_status(self.get_status())
+            with self._status_lock:
+                self._status.reported_at = datetime.now()
+                status = self._status
+            self._cluster.report_status(status)
 
     def get_status(self) -> WorkerStatus:
         with self._status_lock:
