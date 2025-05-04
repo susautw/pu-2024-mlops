@@ -1,4 +1,3 @@
-from contextlib import suppress
 import threading
 import time
 from mlops.cluster.interfaces import WorkerClusterBase
