@@ -1,15 +1,32 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 
 from mlops.cluster.model import WorkerRecord
-from mlops.cluster.storages import CommonStorageBase
 
 
-class WorkerStorageBase(CommonStorageBase[str, WorkerRecord], ABC):
+class WorkerStorageBase(ABC):
     """
     Interface for worker storage classes
 
     Worker storage classes are used to store, cache and manage worker information in a cluster
     """
+
+    @abstractmethod
+    def get(self, worker_id: str) -> WorkerRecord | None:
+        """
+        Get worker record by worker id
+
+        :param worker_id: id of worker
+        :return: WorkerRecord object if exists, None otherwise
+        """
+
+    @abstractmethod
+    def get_all(self) -> Iterable[WorkerRecord]:
+        """
+        Get all worker records
+
+        :return: list of WorkerRecord objects
+        """
 
     @abstractmethod
     def save(self, worker_record: WorkerRecord) -> None:
@@ -34,7 +51,7 @@ class WorkerStorageBase(CommonStorageBase[str, WorkerRecord], ABC):
         Get first idle worker by worker type
 
         :param worker_type: type of worker
-        :return: WorkerStatus object if idle worker exists, None otherwise
+        :return: WorkerRecord object if idle worker exists, None otherwise
         """
 
     @abstractmethod

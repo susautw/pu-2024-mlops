@@ -34,13 +34,12 @@ class WorkerCluster(WorkerClusterBase):
         If a worker is not healthy, remove it from the storage
         """
         while not self._close_event.is_set():
-            with suppress(TimeoutError), self.storage.transaction() as tx:
-                tx.cleanup()
+            self.storage.cleanup()
 
             time.sleep(self.clear_interval)
 
     def get_workers_status(self) -> list[WorkerStatus]:
-        return [w.status for w in self.storage.values()]
+        return [w.status for w in self.storage.get_all()]
 
     def get_worker_status(self, worker_id: str) -> WorkerStatus | None:
         record = self.storage.get(worker_id)
@@ -52,22 +51,20 @@ class WorkerCluster(WorkerClusterBase):
             bridge = self.worker_bridge_factory.get_worker_bridge(record.connection)
             status = bridge.get_status()
             record = record.with_status(status)
-            with self.storage.transaction() as tx:
-                tx.save(record)
+            self.storage.save(record)
         return record.status
 
     def assign_training_task(self, task_id: str) -> WorkerStatus | None:
         task = self.task_repo.get_by_id(task_id)
 
-        with self.storage.transaction() as tx:
-            worker = tx.get_first_idle_by_type(task.task_type)
-            if worker is None:
-                return None
+        worker = self.storage.get_first_idle_by_type(task.task_type)
+        if worker is None:
+            return None
 
-            #! assing task id to worker, the assigned task id should be cleared when
-            #! the worker is done with the task (reporting status with has_task=False)
-            worker = worker.with_task_id(task_id)
-            tx.save(worker)
+        #! assing task id to worker, the assigned task id should be cleared when
+        #! the worker is done with the task (reporting status with has_task=False)
+        worker = worker.with_task_id(task_id)
+        self.storage.save(worker)
 
         bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
         bridge.start(WorkerStartOptions(task_path=str(task.base_dir)))

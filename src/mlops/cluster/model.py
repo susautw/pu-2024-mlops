@@ -38,9 +38,9 @@ class WorkerRecord(NamedTuple):
         return WorkerRecord(self.status, self.connection, task_id, self.updated_at)
 
     @property
-    def data_version(self) -> datetime:
+    def data_version(self) -> int:
         """
         The version of the data.
         This field is used to check if the data is up to date.
         """
-        return self.status.reported_at
+        return int(self.status.reported_at.timestamp())
