@@ -5,12 +5,12 @@ from mlops.common.model import TrainingTask
 
 class TrainingTaskRepositoryBase(ABC):
     @abstractmethod
-    def get_by_id(self, task_id: str) -> TrainingTask:
+    def get_by_id(self, task_id: str) -> TrainingTask | None:
         """
         Get a task by its id
 
         :param task_id: id of the task
-        :return: TrainingTask object
+        :return: TrainingTask object if exists, None otherwise
         :raises RepoError: when task retrieval fails
         """
 
