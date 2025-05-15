@@ -21,6 +21,15 @@ class WorkerStorageBase(ABC):
         """
 
     @abstractmethod
+    def get_by_task_id(self, task_id: str) -> WorkerRecord | None:
+        """
+        Get worker record by task id
+
+        :param task_id: id of task
+        :return: WorkerRecord object if exists, None otherwise
+        """
+
+    @abstractmethod
     def get_all(self) -> Iterable[WorkerRecord]:
         """
         Get all worker records
