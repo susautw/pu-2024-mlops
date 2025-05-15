@@ -87,10 +87,16 @@ class WorkerCluster(WorkerClusterBase):
         return self.training_status_storage.get(task_id)
 
     def pause_training_task(self, task_id: str) -> None:
-        task = self.task_repo.get_by_id(task_id)
-        if task is None:
+        worker = self.worker_storage.get_by_task_id(task_id)
+
+        # TODO: if worker is None, should we raise an error?
+        if worker is None:
             return
-        # TODO: implement pause training task
+
+        # After invoking stop, the worker should report status with has_task=False
+        # then we can clear the task id from the worker storage
+        bridge = self.worker_bridge_factory.get_worker_bridge(worker.connection)
+        bridge.stop()
 
     def check_in(self, worker_data: WorkerData) -> str:
         raise NotImplementedError
