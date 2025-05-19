@@ -1,6 +1,9 @@
+from datetime import datetime, timezone
 import threading
 import time
+import uuid
 from mlops.cluster.interfaces import WorkerClusterBase
+from mlops.cluster.model import WorkerConnectionInfo, WorkerRecord
 from mlops.cluster.storages.training_status_storage_base import TrainingStatusStorageBase
 from mlops.cluster.storages.worker_storage_base import WorkerStorageBase
 from mlops.cluster.worker_bridge import WorkerBridgeFactoryBase
@@ -33,8 +36,7 @@ class WorkerCluster(WorkerClusterBase):
         """
         A thread ensures that all workers are healthy.
 
-        If a worker is not healthy, remove it from the storage
-        """
+        If a worker is not healthy, remove it from the storage"""
         while not self._close_event.is_set():
             self.worker_storage.cleanup()
 
@@ -43,11 +45,16 @@ class WorkerCluster(WorkerClusterBase):
     def get_workers_status(self) -> list[WorkerStatus]:
         return [w.status for w in self.worker_storage.get_all()]
 
-    def get_worker_status(self, worker_id: str) -> WorkerStatus | None:
+    def get_worker_status(
+        self, worker_id: str, force: bool = False
+    ) -> WorkerStatus | None:
         record = self.worker_storage.get(worker_id)
         if record is None:
             return None
-        if record.updated_at.timestamp() + self.force_update_threshold < time.time():
+        if (
+            force
+            or record.updated_at.timestamp() + self.force_update_threshold < time.time()
+        ):
             #! force update the worker status
             # TODO research error handling in grpc
             bridge = self.worker_bridge_factory.get_worker_bridge(record.connection)
@@ -99,15 +106,60 @@ class WorkerCluster(WorkerClusterBase):
         bridge.stop()
 
     def check_in(self, worker_data: WorkerData) -> str:
-        raise NotImplementedError
+        new_worker_id = uuid.uuid4().hex
+        now = datetime.now(tz=timezone.utc)
+        record = WorkerRecord(
+            status=WorkerStatus(
+                id=new_worker_id,
+                task_type=worker_data.task_type,
+                version=worker_data.version,
+                healthy=True,
+                has_task=False,
+                joined_at=now,
+                created_at=now,
+                reported_at=now,
+            ),
+            connection=WorkerConnectionInfo(host=worker_data.host, port=worker_data.port),
+            current_task_id=None,
+            updated_at=now,
+        )
+        self.worker_storage.save(record)
+
+        #! force update the worker status
+        self.get_worker_status(new_worker_id, force=True)
+
+        return new_worker_id
 
     def report_status(self, worker_status: WorkerStatus) -> None:
-        pass
+        """
+        Report the status of the worker
+
+        :param worker_status: WorkerStatus object
+        :return: None
+        """
+        record = self.worker_storage.get(worker_status.id)
+        if record is None:
+            return
+
+        #! update the worker status
+        record = record.with_status(worker_status)
+        self.worker_storage.save(record)
 
     def report_training_status(
         self, worker_id: str, training_status: TrainingStatus | None
     ) -> None:
-        pass
+        """
+        Report the training status of the worker
+
+        :param worker_id: id of the worker
+        :param training_status: TrainingStatus object
+        :return: None
+        """
+        if training_status is None:
+            return
+
+        #! update the training status
+        self.training_status_storage.save(training_status)
 
     def shutdown(self) -> None:
         """
