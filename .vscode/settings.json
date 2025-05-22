@@ -1,8 +1,9 @@
 {
     "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true
+        "**/.git": false,
+        "**/.svn": false,
+        "**/.hg": false,
+        "**/__pycache__": false
     },
     "[python]": {
         "editor.formatOnSave": true,

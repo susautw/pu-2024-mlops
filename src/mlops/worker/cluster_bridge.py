@@ -1,10 +1,8 @@
-from datetime import datetime
-
 from google.protobuf import struct_pb2
-from google.protobuf import timestamp_pb2
 
 from mlops.cluster.interfaces import WorkerClusterWorkerControllerBase
 from mlops.common.model import TrainingStatus, WorkerStatus, WorkerData
+from mlops.common.utils import to_timestamp
 from mlops.protos import worker_cluster_pb2_grpc, messages_pb2, worker_cluster_pb2
 
 
@@ -31,8 +29,8 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
                 task_type=worker_status.task_type,
                 healthy=worker_status.healthy,
                 has_task=worker_status.has_task,
-                joined_at=self._to_timestamp(worker_status.joined_at),
-                created_at=self._to_timestamp(worker_status.created_at),
+                joined_at=to_timestamp(worker_status.joined_at),
+                created_at=to_timestamp(worker_status.created_at),
             )
         )
 
@@ -53,10 +51,3 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
                 else None,
             )
         )
-
-    def _to_timestamp(self, dt: datetime | None) -> timestamp_pb2.Timestamp | None:
-        if dt is None:
-            return None
-        ts = timestamp_pb2.Timestamp()
-        ts.FromDatetime(dt)
-        return ts
