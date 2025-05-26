@@ -1,5 +1,5 @@
 BASE_DIR = $(shell pwd)
-OUT_DIR = ./src/mlops/protos
+OUT_DIR = ./src/protos
 PROTOS_DIR = ./protos
 
 gen-proto:

@@ -1,0 +1,23 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+
+message TestData {
+  string id = 1;
+  optional string name = 2;
+  google.protobuf.Timestamp created_at = 3;
+  repeated string tags = 4;
+  google.protobuf.Empty message = 5;
+}
+
+message RepeatedData {
+  repeated TestData data = 1;
+}
+
+
+service Test {
+  rpc Echo(TestData) returns (TestData);
+  rpc RequestEmpty(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Repeated(RepeatedData) returns (RepeatedData);
+}

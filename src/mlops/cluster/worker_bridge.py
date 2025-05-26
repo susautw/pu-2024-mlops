@@ -11,7 +11,7 @@ from readerwriterlock import rwlock
 
 from mlops.cluster.model import WorkerConnectionInfo
 from mlops.common.model import WorkerStatus
-from mlops.protos import worker_pb2_grpc, messages_pb2, worker_pb2
+from protos import worker_pb2_grpc, messages_pb2, worker_pb2
 from mlops.worker.interfaces import WorkerControllerBase, WorkerStartOptions
 
 __ALL__ = [

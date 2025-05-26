@@ -1,7 +1,7 @@
 from google.protobuf import empty_pb2
 import grpc
 from mlops.common.utils import to_timestamp
-from mlops.protos import worker_pb2, worker_pb2_grpc, messages_pb2
+from protos import worker_pb2, worker_pb2_grpc, messages_pb2
 from mlops.worker.interfaces import WorkerBase, WorkerStartOptions
 
 

@@ -2,7 +2,7 @@ import grpc
 from mlops.cluster.interfaces import WorkerClusterBase
 from mlops.common.model import WorkerStatus
 from mlops.common.utils import to_timestamp
-from mlops.protos import worker_cluster_pb2_grpc, worker_cluster_pb2, messages_pb2
+from protos import worker_cluster_pb2_grpc, worker_cluster_pb2, messages_pb2
 from google.protobuf import empty_pb2
 
 

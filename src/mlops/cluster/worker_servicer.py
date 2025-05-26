@@ -1,4 +1,4 @@
-from mlops.protos import worker_cluster_pb2_grpc, worker_cluster_pb2, messages_pb2
+from protos import worker_cluster_pb2_grpc, worker_cluster_pb2, messages_pb2
 
 
 class WorkerClusterWorkerServicer(worker_cluster_pb2_grpc.WorkerClusterWorkerServicer):

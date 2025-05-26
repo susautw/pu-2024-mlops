@@ -3,7 +3,7 @@ import argparse
 import grpc
 from typing import NamedTuple
 
-from mlops.protos import worker_cluster_pb2_grpc
+from protos import worker_cluster_pb2_grpc
 from mlops.worker.cluster_bridge import ClusterBridge
 from mlops.worker.interfaces import WorkerInitOptions
 from mlops.worker.testing_worker import TestingWorker

@@ -3,7 +3,7 @@ from google.protobuf import struct_pb2
 from mlops.cluster.interfaces import WorkerClusterWorkerControllerBase
 from mlops.common.model import TrainingStatus, WorkerStatus, WorkerData
 from mlops.common.utils import to_timestamp
-from mlops.protos import worker_cluster_pb2_grpc, messages_pb2, worker_cluster_pb2
+from protos import worker_cluster_pb2_grpc, messages_pb2, worker_cluster_pb2
 
 
 class ClusterBridge(WorkerClusterWorkerControllerBase):
