@@ -45,14 +45,32 @@ class WorkerClusterTrainingServicer(
     def AssignTrainingTask(  # noqa: N802
         self, request: worker_cluster_pb2.TaskRequest, context
     ) -> messages_pb2.WorkerStatus:
-        return super().AssignTrainingTask(request, context)
+        result = self._worker_cluster.assign_training_task(request.task_id)
+        if result is None:
+            context.set_code(grpc.StatusCode.RESOURCE_EXHAUSTED)
+            context.set_details("No available workers for the training task")
+            return messages_pb2.WorkerStatus()
+        return self._to_proto_status(result)
 
     def GetTrainingStatus(  # noqa: N802
         self, request: worker_cluster_pb2.TaskRequest, context
     ) -> messages_pb2.TrainingStatus:
-        return super().GetTrainingStatus(request, context)
+        status = self._worker_cluster.get_training_status(request.task_id)
+
+        if status is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Training task {request.task_id} not found")
+            return messages_pb2.TrainingStatus()
+        return messages_pb2.TrainingStatus(
+            task_id=status.task_id,
+            phase=status.phase,
+            progress=status.progress,
+            description=status.description,
+            is_completed=status.is_completed,
+            updated_at=to_timestamp(status.updated_at),
+        )
 
     def PauseTrainingTask(  # noqa: N802
         self, request: worker_cluster_pb2.TaskRequest, context
     ) -> None:
-        return super().PauseTrainingTask(request, context)
+        self._worker_cluster.pause_training_task(request.task_id)

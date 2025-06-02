@@ -45,7 +45,7 @@ class ClusterBridge(WorkerClusterWorkerControllerBase):
                     phase=training_status.phase,
                     progress=training_status.progress,
                     description=training_status.description,
-                    is_completed=training_status.is_complete,
+                    is_completed=training_status.is_completed,
                 )
                 if training_status is not None
                 else None,

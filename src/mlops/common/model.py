@@ -43,7 +43,7 @@ class TrainingStatus:
     Additional details about the task's current status.
     """
 
-    is_complete: bool
+    is_completed: bool
     """
     Indicates whether the task has been completed.
     """
