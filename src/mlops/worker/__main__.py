@@ -1,9 +1,12 @@
 import argparse
+from concurrent.futures import ThreadPoolExecutor
+from http import server
 
 import grpc
 from typing import NamedTuple
 
-from protos import worker_cluster_pb2_grpc
+from mlops.worker.worker_servicer import WorkerServicer
+from protos import worker_cluster_pb2_grpc, worker_pb2_grpc
 from mlops.worker.cluster_bridge import ClusterBridge
 from mlops.worker.interfaces import WorkerInitOptions
 from mlops.worker.testing_worker import TestingWorker
@@ -28,6 +31,15 @@ def main(argv: list[str] | None = None):
                 port=args.port,
             ),
         )
+
+        server = grpc.server(
+            ThreadPoolExecutor(max_workers=10),
+        )
+        worker_pb2_grpc.add_WorkerServicer_to_server(WorkerServicer(worker), server)
+        server.add_insecure_port(f"{args.host}:{args.port}")
+        server.start()
+        print(f"Worker listening on {args.host}:{args.port}")
+        server.wait_for_termination()
 
 
 class Args(NamedTuple):
