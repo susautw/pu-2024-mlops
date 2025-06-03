@@ -16,6 +16,9 @@ class TestServicer(test_pb2_grpc.TestServicer):
     def Echo(
         self, request: test_pb2.TestData, context: grpc.ServicerContext
     ) -> test_pb2.TestData:
+        # print(f"Received request: {type(request.tags[2])}")
+        context.set_code(grpc.StatusCode.NOT_FOUND)
+        context.set_details("This is a test error message")
         return request
 
     def RequestEmpty(

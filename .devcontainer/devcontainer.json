@@ -10,6 +10,9 @@
 			"version": "latest",
 			"dockerDashComposeVersion": "v2",
 			"installDockerBuildx": true
+		},
+		"ghcr.io/devcontainers-extra/features/homebrew-package": {
+			"package": "grpcui"
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

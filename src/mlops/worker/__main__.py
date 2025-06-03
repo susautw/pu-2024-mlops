@@ -1,6 +1,5 @@
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-from http import server
 
 import grpc
 from typing import NamedTuple
