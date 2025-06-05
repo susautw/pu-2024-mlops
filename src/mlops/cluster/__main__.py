@@ -1,9 +1,17 @@
 import argparse
 from typing import NamedTuple
 
+from mlops.cluster.storages import TrainingStatusStorage, WorkerStorage
+from mlops.cluster.worker_bridge import WorkerBridgeFactory
+from mlops.cluster.worker_cluster import WorkerCluster
+
 
 def main():
-    pass
+    cluster = WorkerCluster(
+        worker_storage=WorkerStorage(),
+        training_status_storage=TrainingStatusStorage(),
+        worker_bridge_factory=WorkerBridgeFactory(),
+    )
 
 
 class Args(NamedTuple):
