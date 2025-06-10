@@ -11,18 +11,25 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name = Mapped[str]
 
+    tasks: Mapped[list["TrainingTask"]] = relationship(
+        "TrainingTask", back_populates="user"
+    )
+
 
 class TrainingTask(Base):
     __tablename__ = "training_tasks"
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey(User.id))
+
     name: Mapped[str]
     base_dir: Mapped[str]
     input_dir: Mapped[str]
-    task_type: Mapped[str]
-    version: Mapped[str]
+    task_type: Mapped[str]  # required worker type
+    version: Mapped[str]  # required worker version
     created_at: Mapped[datetime]  # ISO format datetime string
     updated_at: Mapped[datetime]  # ISO format datetime string
 
+    user: Mapped[User] = relationship(User, back_populates="tasks")
     statuses: Mapped[list["TrainingStatus"]] = relationship(
         "TrainingStatus", back_populates="task"
     )
