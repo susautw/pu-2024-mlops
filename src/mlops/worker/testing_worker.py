@@ -61,6 +61,7 @@ class TestingWorker(WorkerBase):
             self._report_status()
 
     def init(self, cluster: WorkerClusterWorkerControllerBase, options: WorkerInitOptions) -> None:
+        self._cluster = cluster
         worker_id = cluster.check_in(WorkerData(
             host=options.host,
             port=options.port,
@@ -112,17 +113,18 @@ class TestingWorker(WorkerBase):
             num = cfg.get('num', 5)
 
             record_file = task_path / 'record.txt'
-            with record_file.open('w+') as record:
-                cur = record_file.read_text()
-                cur = int(cur) if cur != "" else 0
-                record.write(str(cur + num))
+            cur_text = record_file.read_text() if record_file.exists() else ""
+            cur = int(cur_text) if cur_text != "" else 0
+            new_val = cur + num
+            record_file.write_text(str(new_val))
 
-                if cur >= num:
-                    self._end_task(task_path, True)
+            if new_val >= num:
+                self._end_task(task_path, True)
 
     def _end_task(self, task_path: Path, success: bool) -> None:
-        with task_path / 'status.txt' as status_file:
-            status_file.write('success' if success else 'failure')
+        status_file = task_path / 'status.txt'
+        with status_file.open('w') as f:
+            f.write('success' if success else 'failure')
         self.stop()
 
     def __repr__(self):
