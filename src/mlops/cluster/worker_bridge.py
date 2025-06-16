@@ -94,14 +94,15 @@ class WorkerBridgeFactory(WorkerBridgeFactoryBase):
 
     def __init__(self):
         self._cached_bridges = {}
-        self._clean_thread = threading.Thread(target=self._clean)
+        self._clean_thread = threading.Thread(target=self._clean, daemon=True)
         self._close_event = threading.Event()
         self._cache_lock = rwlock.RWLockFair()
+        self._clean_thread.start()
 
     def _clean(self):
         while not self._close_event.wait(0):
             with self._cache_lock.gen_wlock():
-                for key, record in self._cached_bridges.items():
+                for key, record in list(self._cached_bridges.items()):
                     record.breath -= 1
                     if record.breath <= 0:
                         record.bridge.close()
