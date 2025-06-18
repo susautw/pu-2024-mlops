@@ -111,37 +111,38 @@ class TestingWorker(WorkerBase):
                     self.stop()
                     continue
 
-                output_path = self._current_task_path / "output"
-                assert not output_path.is_file()
-                output_path.mkdir(parents=True, exist_ok=True)
-            if not (output_path / "config.json").is_file():
-                self._end_task(output_path, False)
+                task_path = self._current_task_path / "output"
+                assert not task_path.is_file()
+                task_path.mkdir(parents=True, exist_ok=True)
+            if not (task_path / "config.json").is_file():
+                self._end_task(task_path, False)
                 continue
 
             try:
-                cfg = json.load((output_path / "config.json").open())
+                cfg = json.load((task_path / "config.json").open())
             except json.JSONDecodeError:
-                self._end_task(output_path, False)
+                self._end_task(task_path, False)
                 continue
 
             if not isinstance(cfg, dict):
-                self._end_task(output_path, False)
+                self._end_task(task_path, False)
                 continue
 
             num = cfg.get("num", 5)
 
-            record_file = output_path / "record.txt"
-            with record_file.open("w+") as record:
-                cur = record_file.read_text()
-                cur = int(cur) if cur != "" else 0
-                record.write(str(cur + num))
+            record_file = task_path / "record.txt"
+            cur_text = record_file.read_text() if record_file.exists() else ""
+            cur = int(cur_text) if cur_text != "" else 0
+            new_val = cur + num
+            record_file.write_text(str(new_val))
 
-                if cur >= num:
-                    self._end_task(output_path, True)
+            if new_val >= num:
+                self._end_task(task_path, True)
 
     def _end_task(self, task_path: Path, success: bool) -> None:
-        with (task_path / "status.txt").open("r+") as status_file:
-            status_file.write("success" if success else "failure")
+        status_file = task_path / "status.txt"
+        with status_file.open("w") as f:
+            f.write("success" if success else "failure")
         self.stop()
 
     def __repr__(self):
