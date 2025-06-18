@@ -1,0 +1,27 @@
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE training_tasks (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    base_dir VARCHAR(255) NOT NULL,
+    input_dir VARCHAR(255) NOT NULL,
+    task_type VARCHAR(255) NOT NULL,
+    version VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE training_status (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    task_id BIGINT NOT NULL,
+    phase VARCHAR(255) NOT NULL,
+    progress FLOAT NOT NULL DEFAULT 0,
+    description VARCHAR(255),
+    is_completed BOOLEAN NOT NULL DEFAULT false,
+    FOREIGN KEY (task_id) REFERENCES training_tasks(id)
+);
